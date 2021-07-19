@@ -95,16 +95,11 @@ def playerQueue(player: Member, reportChannelId: int, *arg, quiet: bool = False)
 
     if (queue_length == 5):
         Queue.addToQueue(player, queueTime)
-        mentionedPlayerList = Queue.getQueueList(mentionPlayers=True, separator=", ")
 
-        return [QueueUpdateEmbed(
-            title="Queue Popped!",
-            desc=player.mention + " has been added to the queue for " + str(queueTime) + " minutes.\n\n"
-            "**Queue is now full!** \n\n"
-            "Type !random for random teams.\n"
-            "Type !captains to get picked last."
-        ),
-            "Queue has popped! Get ready!\n" + mentionedPlayerList]
+        mentionedPlayerList = Queue.getQueueList(mentionPlayers=True, separator=", ")
+        randomTeamsEmbed = random()
+
+        return [randomTeamsEmbed, "Queue has popped! Get ready!\n" + mentionedPlayerList]
 
     Queue.addToQueue(player, queueTime)
     playerList = Queue.getQueueList()
@@ -229,61 +224,34 @@ def captains(player: Member):
     )
 
 
-def random(player: Member):
+def random():
     """
         Pops the queue and randomly assigns players to teams.
-
-        Parameters:
-            player: dicord.Member - The author of the message.
 
         Returns:
             dicord.Embed - The embedded message to respond with.
     """
-    if (Queue.queueAlreadyPopped()):
-        return ErrorEmbed(
-            title="Captains Already Chosen",
-            desc="You cannot change your mind once you pick captains."
-        )
+    # if (Queue.queueAlreadyPopped()):
+    #     return ErrorEmbed(
+    #         title="Captains Already Chosen",
+    #         desc="You cannot change your mind once you pick captains."
+    #     )
 
-    if (Queue.getQueueLength() != 6):
-        return ErrorEmbed(
-            title="Queue is Not Full",
-            desc="You cannot pop a queue until is full."
-        )
+    # if (Queue.getQueueLength() != 6):
+    #     return ErrorEmbed(
+    #         title="Queue is Not Full",
+    #         desc="You cannot pop a queue until is full."
+    #     )
 
-    if (not Queue.isPlayerInQueue(player)):
-        return ErrorEmbed(
-            title="Not in Queue",
-            desc="You are not in the queue, therefore you cannot pop the queue."
-        )
+    # if (not Queue.isPlayerInQueue(player)):
+    #     return ErrorEmbed(
+    #         title="Not in Queue",
+    #         desc="You are not in the queue, therefore you cannot pop the queue."
+    #     )
 
     blueTeam, orangeTeam = Queue.randomPop()
     Leaderboard.startMatch(blueTeam, orangeTeam)
     return PlayersSetEmbed(blueTeam, orangeTeam)
-
-
-def brokenQueue(player: Member) -> Embed:
-    """
-        Removes the active match that the author is in.
-
-        Parameters:
-            player: dicord.Member - The author of the message.
-
-        Returns:
-            dicord.Embed - The embedded message to respond with.
-    """
-    msg = Leaderboard.brokenQueue(player)
-
-    if (":white_check_mark:" in msg):
-        return QueueUpdateEmbed(
-            title="Popped Queue Removed",
-            desc="The popped queue has been removed from active matches. You may now re-queue."
-        )
-
-    return ErrorEmbed(
-        title="Could Not Remove Queue",
-        desc=msg
-    )
 
 
 def leaderboard(author: Member, mentions: List[Member], lbChannelId: int, *arg) -> Embed:

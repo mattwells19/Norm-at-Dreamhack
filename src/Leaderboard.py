@@ -30,7 +30,7 @@ def brokenQueue(player: Member) -> str:
     match = getActiveMatch(player)
 
     if (not match):
-        return "You are not in the queue; therefore you cannot report a broken queue."
+        return "The mentioned player is not in any active matches."
 
     if (match[MatchKey.REPORTED_WINNER][MatchKey.WINNING_TEAM] is not None):
         return "You cannot report a broken queue once someone reports the match."

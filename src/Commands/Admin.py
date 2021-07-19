@@ -1,9 +1,48 @@
 from CheckForUpdates import updateBot
-from EmbedHelper import AdminEmbed, ErrorEmbed
+from EmbedHelper import AdminEmbed, ErrorEmbed, QueueUpdateEmbed
 from typing import List
 from bot import __version__
 from discord import Role, Embed, Member
 import Queue
+from Leaderboard import brokenQueue as breakQueue
+
+
+def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
+    """
+        Removes the active match that the mentioned player is in.
+
+        Parameters:
+            roles: List[discord.Role] - The roles of the author of the message.
+            mentions: List[dicord.Member] - The list of members mentioned in the message.
+
+        Returns:
+            dicord.Embed - The embedded message to respond with.
+    """
+
+    if (Queue.isBotAdmin(roles)):
+        if (len(mentions) != 1):
+            return ErrorEmbed(
+                title="Could Not Remove Queue",
+                desc="You must mention one player who is in the match you want to remove."
+            )
+        else:
+            msg = breakQueue(mentions[0])
+
+            if (":white_check_mark:" in msg):
+                return QueueUpdateEmbed(
+                    title="Popped Queue Removed",
+                    desc="The popped queue has been removed from active matches."
+                )
+
+            return ErrorEmbed(
+                title="Could Not Remove Queue",
+                desc=msg
+            )
+    else:
+        return AdminEmbed(
+            title="Permission Denied",
+            desc="You do not have the strength to break queues. Ask an admin if you need to break a queue."
+        )
 
 
 def update(roles: List[Role]) -> Embed:

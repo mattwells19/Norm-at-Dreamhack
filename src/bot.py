@@ -1,11 +1,11 @@
-__author__ = "Caleb Smith / Twan / Matt Wells (Tux)"
-__copyright__ = "Copyright 2019, MIT License"
-__credits__ = "Caleb Smith / Twan / Matt Wells (Tux)"
+__author__ = "Matt Wells (Tux) / Austin Baker (h)"
+__copyright__ = "Copyright 2021, MIT License"
+__credits__ = "Matt Wells (Tux) / Austin Baker (h)"
 __license__ = "MIT"
-__version__ = "6.0.0"
-__maintainer__ = "Caleb Smith / Twan / Matt Wells (Tux)"
-__email__ = "caleb.benjamin9799@gmail.com / unavailable / mattwells878@gmail.com"
-
+__version__ = "1.0.0"
+__maintainer__ = "Matt Wells (Tux) / Austin Baker (h)"
+__email__ = "mattwells878@gmail.com / noise.9no@gmail.com"
+__credits__ = "Forked from https://github.com/ClamSageCaleb/UNCC-SIX-MANS to be modified for UNCC event with Dreamhack."
 
 import AWSHelper as AWS
 from DataFiles import getDiscordToken, updateDiscordToken, getChannelIds
@@ -44,7 +44,7 @@ LB_CHANNEL: discord.channel = None
 
 @client.event
 async def on_message(message: discord.Message):
-    isReport = "report" in message.content.lower()
+    isReport = "!report" in message.content.lower()
     if (message.author != client.user):
 
         if (
@@ -91,7 +91,7 @@ async def on_ready():
     try:
         channel = client.get_channel(QUEUE_CH_IDS[0])
         await channel.send(embed=AdminEmbed(
-            title="Norm Started",
+            title="Norm@Dreamhack Started",
             desc="Current version: v{0}".format(__version__)
         ))
     except Exception as e:
@@ -179,21 +179,21 @@ async def listq(ctx):
     await ctx.send(embed=SixMans.listQueue(ctx.message.author))
 
 
-@client.command(name='rnd', aliases=['random', 'idontwanttopickteams', 'fuckcaptains'], pass_context=True)
-async def random(ctx):
-    await ctx.send(embed=SixMans.random(ctx.message.author))
+# @client.command(name='rnd', aliases=['random', 'idontwanttopickteams', 'fuckcaptains'], pass_context=True)
+# async def random(ctx):
+#     await ctx.send(embed=SixMans.random(ctx.message.author))
 
 
-@client.command(name='captains', aliases=['cap', 'iwanttopickteams', 'Captains', 'captain', 'Captain', 'Cap'], pass_context=True)  # noqa
-async def captains(ctx):
-    await ctx.send(embed=SixMans.captains(ctx.message.author))
+# @client.command(name='captains', aliases=['cap', 'iwanttopickteams', 'Captains', 'captain', 'Captain', 'Cap'], pass_context=True)  # noqa
+# async def captains(ctx):
+#     await ctx.send(embed=SixMans.captains(ctx.message.author))
 
 
-@client.command(name='pick', aliases=['add', 'choose', '<:pick:628999871554387969>'], pass_context=True)
-async def pick(ctx):
-    embeds = SixMans.pick(ctx.message.author, ctx.message.mentions)
-    for embed in embeds:
-        await ctx.send(embed=embed)
+# @client.command(name='pick', aliases=['add', 'choose', '<:pick:628999871554387969>'], pass_context=True)
+# async def pick(ctx):
+#     embeds = SixMans.pick(ctx.message.author, ctx.message.mentions)
+#     for embed in embeds:
+#         await ctx.send(embed=embed)
 
 
 @client.command(name="report", pass_contex=True)
@@ -208,7 +208,7 @@ async def showLeaderboard(ctx, *arg):
 
 @client.command(name="brokenq", aliases=["requeue", "re-q"], pass_contex=True)
 async def removeLastPoppedQueue(ctx):
-    await ctx.send(embed=SixMans.brokenQueue(ctx.message.author))
+    await ctx.send(embed=Admin.brokenQueue(ctx.message.author.roles, ctx.message.mentions))
 
 
 @client.command(name='clear', aliases=['clr', 'reset'], pass_context=True)
