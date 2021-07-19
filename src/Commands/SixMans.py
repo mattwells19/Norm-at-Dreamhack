@@ -11,7 +11,7 @@ from EmbedHelper import \
     CaptainsAlreadySetEmbed,\
     CaptainsPopEmbed,\
     PlayersSetEmbed
-from Commands.Utils import updateLeaderboardChannel, orangeTeamPick, blueTeamPick
+from Commands.Utils import generateLobbyDetails, updateLeaderboardChannel, orangeTeamPick, blueTeamPick
 
 
 def playerQueue(player: Member, reportChannelId: int, *arg, quiet: bool = False) -> List[str or Embed]:
@@ -250,8 +250,9 @@ def random():
     #     )
 
     blueTeam, orangeTeam = Queue.randomPop()
+    lobbyDetails = generateLobbyDetails()
     Leaderboard.startMatch(blueTeam, orangeTeam)
-    return PlayersSetEmbed(blueTeam, orangeTeam)
+    return PlayersSetEmbed(blueTeam, orangeTeam, lobbyDetails)
 
 
 def leaderboard(author: Member, mentions: List[Member], lbChannelId: int, *arg) -> Embed:

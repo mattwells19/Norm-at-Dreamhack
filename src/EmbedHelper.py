@@ -1,5 +1,5 @@
 from discord import Color, Embed
-from Types import BallChaser, Team
+from Types import BallChaser, LobbyDetails, Team
 from typing import List
 
 
@@ -106,7 +106,7 @@ def CaptainsPopEmbed(blueCap: BallChaser, orangeCap: BallChaser, playerList: str
     )
 
 
-def PlayersSetEmbed(blueTeam: List[BallChaser], orangeTeam: List[BallChaser]) -> Embed:
+def PlayersSetEmbed(blueTeam: List[BallChaser], orangeTeam: List[BallChaser], lobbyDetails: LobbyDetails) -> Embed:
     return QueueUpdateEmbed(
         title="Teams are Set!",
         desc=""
@@ -118,34 +118,33 @@ def PlayersSetEmbed(blueTeam: List[BallChaser], orangeTeam: List[BallChaser]) ->
         name="🔶 ORANGE TEAM 🔶",
         value="\n".join([player.mention for player in orangeTeam]),
         inline=False
+    ).add_field(
+        name="\u200b",
+        value="\u200b",
+        inline=False
+    ).add_field(
+        name="LOBBY DETAILS",
+        value="Username: {username}\nPassword: {password}\n\nBlue team makes the lobby, Orange team joins.".format(
+            username=lobbyDetails.username, password=lobbyDetails.password),
+        inline=False
     )
 
 
 def HelpEmbed() -> Embed:
     return Embed(
-        title="Norm Commands",
-        description="https://clamsagecaleb.github.io/UNCC-SIX-MANS",
+        title="Norm@Dreamhack Commands",
         color=0x38761D
     ).add_field(
         name="!q",
-        value="Adds you to the queue",
+        value="Adds you to the queue.",
         inline=False
     ).add_field(
         name="!leave",
-        value="Removes you from the queue",
+        value="Removes you from the queue.",
         inline=False
     ).add_field(
         name="!list",
-        value="Lists the current queue",
-        inline=False
-    ).add_field(
-        name="!random",
-        value="Randomly picks teams (Requires 6 players in queue)",
-        inline=False
-    ).add_field(
-        name="!captains",
-        value="Randomly selects captains (Requires 6 players in queue)."
-        "\nFirst captain picks 1 \nSecond captain picks the next two",
+        value="Lists the current queue.",
         inline=False
     ).add_field(
         name="!report",
@@ -170,5 +169,5 @@ def HelpEmbed() -> Embed:
     ).set_thumbnail(
         url="https://raw.githubusercontent.com/ClamSageCaleb/UNCC-SIX-MANS/master/media/49ers.png"
     ).set_footer(
-        text="Developed by Twan, Clam, and Tux"
+        text="Developed by Tux and h"
     )
