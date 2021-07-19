@@ -5,9 +5,9 @@ name: Lint Project Files
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [main]
 
-jobs:  
+jobs:
   build:
     name: Verify Python files pass linting
     runs-on: ubuntu-latest
