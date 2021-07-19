@@ -9,7 +9,7 @@ from Leaderboard import brokenQueue as breakQueue
 
 def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
     """
-        Removes the active match that the author is in.
+        Removes the active match that the mentioned player is in.
 
         Parameters:
             roles: List[discord.Role] - The roles of the author of the message.
@@ -31,7 +31,7 @@ def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
             if (":white_check_mark:" in msg):
                 return QueueUpdateEmbed(
                     title="Popped Queue Removed",
-                    desc="The popped queue has been removed from active matches. You may now re-queue."
+                    desc="The popped queue has been removed from active matches."
                 )
 
             return ErrorEmbed(
