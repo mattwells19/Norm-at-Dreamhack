@@ -245,9 +245,13 @@ async def restart(ctx):
     await ctx.send(embed=Admin.restart())
 
 
-@client.command(name='update', pass_context=True)
+@client.command(name="update", pass_context=True)
 async def update(ctx):
-    await ctx.send(embed=Admin.update())
+    await ctx.send(embed=AdminEmbed(
+        title="Checking For Updates",
+        desc="Please hang tight."
+    ))
+    await ctx.send(embed=Admin.update(ctx.message.author.roles))
 
 
 """

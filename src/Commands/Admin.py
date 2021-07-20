@@ -48,18 +48,12 @@ def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
 def update(roles: List[Role]) -> Embed:
     """
         Middleware function to check author's permissions before running the update script.
-
         Parameters:
             roles: List[discord.Role] - The roles of the author of the message.
-
         Returns:
             dicord.Embed - The embedded message to respond with.
     """
     if(Queue.isBotAdmin(roles)):
-        return AdminEmbed(
-            title="Checking For Updates",
-            desc="Please hang tight."
-        )
         updateBot()
         return AdminEmbed(
             title="Already Up to Date",
