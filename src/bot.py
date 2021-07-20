@@ -20,6 +20,8 @@ from typing import List
 from Commands import EasterEggs, SixMans, Testing, Admin, Utils
 from discord.embeds import Embed
 
+from Queue import queueAlreadyPopped
+
 # Bot prefix and Discord Bot token
 BOT_PREFIX = ("!")
 
@@ -134,9 +136,13 @@ async def stale_queue_timer():
 @client.command(name='q', aliases=['addmepapanorm', 'Q', 'addmebitch', 'queue', 'join'], pass_context=True)
 async def q(ctx, *arg):
     messages = SixMans.playerQueue(ctx.message.author, REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1, *arg)
+    user = await client.get_user(ctx.message.author.id)
     for msg in messages:
         if (isinstance(msg, Embed)):
-            await ctx.send(embed=msg)
+            if (queueAlreadyPopped()):
+                await user.send(msg)
+            else:
+                ctx.send(embed=msg)
         else:
             await ctx.send(msg)
 

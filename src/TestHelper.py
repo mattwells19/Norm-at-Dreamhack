@@ -20,8 +20,8 @@ def fillQueue():
             queueTime=(datetime.now() + timedelta(minutes=60))
         ),
         BallChaser(
-            name="Durham#1999",
-            id=251924205271121920,
+            name="h.#0001",
+            id=163667436229361664,
             queueTime=(datetime.now() + timedelta(minutes=60))
         ),
         BallChaser(
