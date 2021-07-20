@@ -8,12 +8,11 @@ __email__ = "mattwells878@gmail.com / noise.9no@gmail.com"
 __credits__ = "Forked from https://github.com/ClamSageCaleb/UNCC-SIX-MANS to be modified for UNCC event with Dreamhack."
 
 import AWSHelper as AWS
-from DataFiles import getDiscordToken, updateDiscordToken, getChannelIds
+from DataFiles import getDiscordToken, getChannelIds
 from EmbedHelper import ErrorEmbed, AdminEmbed, HelpEmbed
 from asyncio import sleep as asyncsleep
 import discord
 from discord.ext.commands import Bot, CommandNotFound
-from os import name as osName, system as osSystem
 from random import randint
 from time import sleep
 from typing import List
@@ -31,8 +30,8 @@ pikaO = 1
 
 # Channel ID's
 LEADERBOARD_CH_ID = -1
-QUEUE_CH_IDS = []
-REPORT_CH_IDS = []
+QUEUE_CH_ID = -1
+REPORT_CH_ID = -1
 
 # Leaderboard Channel Object
 LB_CHANNEL: discord.channel = None
@@ -49,26 +48,26 @@ async def on_message(message: discord.Message):
 
         if (
             isReport and
-            len(QUEUE_CH_IDS) > 0 and
-            message.channel.id in QUEUE_CH_IDS and
-            message.channel.id not in REPORT_CH_IDS
+            QUEUE_CH_ID != -1 and
+            message.channel.id == QUEUE_CH_ID and
+            message.channel.id != REPORT_CH_ID
         ):
             channel = client.get_channel(message.channel.id)
             await channel.send(embed=ErrorEmbed(
                 title="Can't Do That Here",
-                desc="You can only report matches in the <#{0}> channel.".format(REPORT_CH_IDS[0])
+                desc="You can only report matches in the <#{0}> channel.".format(REPORT_CH_ID)
             ))
 
         elif (
             not isReport and
-            len(REPORT_CH_IDS) > 0 and
-            message.channel.id in REPORT_CH_IDS and
-            message.channel.id not in QUEUE_CH_IDS
+            REPORT_CH_ID != -1 and
+            message.channel.id == REPORT_CH_ID and
+            message.channel.id != QUEUE_CH_ID
         ):
             channel = client.get_channel(message.channel.id)
             await channel.send(embed=ErrorEmbed(
                 title="Can't Do That Here",
-                desc="You can only use that command in the <#{0}> channel.".format(QUEUE_CH_IDS[0])
+                desc="You can only use that command in the <#{0}> channel.".format(QUEUE_CH_ID)
             ))
         else:
             await client.process_commands(message)
@@ -89,7 +88,7 @@ async def on_ready():
     print("Logged in as " + client.user.name + " version " + __version__)
 
     try:
-        channel = client.get_channel(QUEUE_CH_IDS[0])
+        channel = client.get_channel(QUEUE_CH_ID)
         await channel.send(embed=AdminEmbed(
             title="Norm@Dreamhack Started",
             desc="Current version: v{0}".format(__version__)
@@ -110,7 +109,7 @@ async def on_ready():
 
 async def stale_queue_timer():
     await client.wait_until_ready()
-    channel = client.get_channel(QUEUE_CH_IDS[0])
+    channel = client.get_channel(QUEUE_CH_ID)
 
     while True:
 
@@ -133,7 +132,7 @@ async def stale_queue_timer():
 
 @client.command(name='q', aliases=['addmepapanorm', 'Q', 'addmebitch', 'queue', 'join'], pass_context=True)
 async def q(ctx, *arg):
-    messages = SixMans.playerQueue(ctx.message.author, REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1, *arg)
+    messages = SixMans.playerQueue(ctx.message.author, REPORT_CH_ID, *arg)
     for msg in messages:
         if (isinstance(msg, Embed)):
             await ctx.send(embed=msg)
@@ -145,7 +144,7 @@ async def q(ctx, *arg):
 async def qq(ctx, *arg):
     messages = SixMans.playerQueue(
         ctx.message.author,
-        REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1,
+        REPORT_CH_ID,
         *arg,
         quiet=True
     )
@@ -326,28 +325,19 @@ async def help(ctx):
 
 
 def main():
-    global LEADERBOARD_CH_ID, QUEUE_CH_IDS, REPORT_CH_IDS
+    global LEADERBOARD_CH_ID, QUEUE_CH_ID, REPORT_CH_ID
 
     token = getDiscordToken()
     if (token == ""):
-        token = updateDiscordToken(
-            input("No Discord Bot token found. Paste your Discord Bot token below and hit ENTER.\ntoken: ")
-        )
-
-    # clear screen to hide token
-    if osName == 'nt':
-        _ = osSystem('cls')
-    else:
-        _ = osSystem('clear')
-
+        print("No Discord Bot token provided.")
     AWS.init()
 
     channels = getChannelIds()
     LEADERBOARD_CH_ID = channels["leaderboard_channel"]
-    QUEUE_CH_IDS = channels["queue_channels"]
-    REPORT_CH_IDS = channels["report_channels"]
+    QUEUE_CH_ID = channels["queue_channels"]
+    REPORT_CH_ID = channels["report_channels"]
 
-    if (len(QUEUE_CH_IDS) > 0):
+    if (QUEUE_CH_ID != -1):
         client.loop.create_task(stale_queue_timer())
     else:
         print("Stale queue feature disabled as no queue channel id was specified.")
@@ -360,8 +350,8 @@ def main():
             "If you need help locating the token for your bot, visit https://www.writebots.com/discord-bot-token/"
         )
         sleep(5)
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":
