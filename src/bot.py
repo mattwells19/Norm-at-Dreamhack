@@ -136,15 +136,23 @@ async def stale_queue_timer():
 
 @client.command(name='q', aliases=['addmepapanorm', 'Q', 'addmebitch', 'queue', 'join'], pass_context=True)
 async def q(ctx, *arg):
-    messages = SixMans.playerQueue(ctx.message.author, REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1, *arg)
-    user = ctx.message.author
+    players = getBallChaserList()
+    messages = SixMans.playerQueue(
+        ctx.message.author,
+        REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1,
+        *arg,
+    )
+    author = ctx.message.author
     for msg in messages:
         if (isinstance(msg, Embed)):
-            if (queueAlreadyPopped()):
-                await user.send(embed=msg)
-                await ctx.send(embed=msg)
-            else:
-                await ctx.send(embed=msg)
+            if (getActiveMatch(author) is not None):
+                for i in players:
+                    user = await client.fetch_user(str(i.id))
+                    await user.send(embed=msg)
+                
+                await author.send(embed=msg)
+
+            await ctx.send(embed=msg)
         else:
             await ctx.send(msg)
 
