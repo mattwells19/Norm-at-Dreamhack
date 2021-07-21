@@ -7,7 +7,6 @@ __maintainer__ = "Matt Wells (Tux) / Austin Baker (h)"
 __email__ = "mattwells878@gmail.com / noise.9no@gmail.com"
 __credits__ = "Forked from https://github.com/ClamSageCaleb/UNCC-SIX-MANS to be modified for UNCC event with Dreamhack."
 
-from discord import player
 import AWSHelper as AWS
 from DataFiles import getDiscordToken, updateDiscordToken, getChannelIds
 from EmbedHelper import ErrorEmbed, AdminEmbed, HelpEmbed
@@ -22,7 +21,7 @@ from Commands import EasterEggs, SixMans, Testing, Admin, Utils
 from discord.embeds import Embed
 from Leaderboard import getActiveMatch
 
-from Queue import queueAlreadyPopped
+from Queue import getBallChaserList, queueAlreadyPopped
 
 # Bot prefix and Discord Bot token
 BOT_PREFIX = ("!")
@@ -32,7 +31,6 @@ client = Bot(command_prefix=BOT_PREFIX)
 client.remove_command('help')
 
 pikaO = 1
-players = []
 
 # Channel ID's
 LEADERBOARD_CH_ID = -1
@@ -153,26 +151,26 @@ async def q(ctx, *arg):
 
 @client.command(name='qq', aliases=['quietq', 'QQ', 'quietqueue', 'shh', 'dontping'], pass_context=True)
 async def qq(ctx, *arg):
+    players = getBallChaserList()
     messages = SixMans.playerQueue(
         ctx.message.author,
         REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1,
         *arg,
         quiet=True
     )
-    user = ctx.message.author
-    players.append(user)
+    author = ctx.message.author
     for msg in messages:
         if (isinstance(msg, Embed)):
-            if (getActiveMatch(user) is not None):
+            if (getActiveMatch(author) is not None):
                 for i in players:
+                    user = await client.fetch_user(str(i.id))
                     await user.send(embed=msg)
-                    players.remove(i)
-                    print("3")
+                
+                await author.send(embed=msg)
 
             await ctx.send(embed=msg)
         else:
             await ctx.send(msg)
-            print("1")
 
 
 @client.command(name='leave', aliases=['yoink', 'gtfo', 'getmethefuckouttahere'], pass_context=True)
