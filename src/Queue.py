@@ -29,9 +29,6 @@ def getQueueLength() -> int:
 def isPlayerInQueue(player: Member) -> bool:
     return currQueue.contains(where(BallChaserKey.ID) == player.id)
 
-def getBallChaserID(player: BallChaser) -> int:
-    return player.id
-
 
 def clearQueue() -> None:
     currQueue.truncate()

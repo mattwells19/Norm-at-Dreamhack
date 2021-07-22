@@ -20,8 +20,7 @@ from typing import List
 from Commands import EasterEggs, SixMans, Testing, Admin, Utils
 from discord.embeds import Embed
 from Leaderboard import getActiveMatch
-
-from Queue import getBallChaserList, queueAlreadyPopped
+from Queue import getBallChaserList
 
 # Bot prefix and Discord Bot token
 BOT_PREFIX = ("!")
