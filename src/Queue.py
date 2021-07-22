@@ -102,6 +102,10 @@ def getQueueList(mentionPlayers: bool = False, includeTimes: bool = True, separa
     return separator.join(playerList)
 
 
+def getBallChaserList() -> List[BallChaser]:
+    return [BallChaser.fromDocument(p) for p in currQueue.all()]
+
+
 def randomPop() -> Tuple[List[BallChaser], List[BallChaser]]:
     players = [BallChaser.fromDocument(p) for p in currQueue.all()]
     orangeTeam = random.sample(players, 3)

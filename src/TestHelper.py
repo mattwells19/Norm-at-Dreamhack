@@ -20,12 +20,12 @@ def fillQueue():
             queueTime=(datetime.now() + timedelta(minutes=60))
         ),
         BallChaser(
-            name="Durham#1999",
-            id=251924205271121920,
+            name="h.#0001",
+            id=163667436229361664,
             queueTime=(datetime.now() + timedelta(minutes=60))
         ),
         BallChaser(
-            name="DaffyJr#6070",
+            name="daffy#6691",
             id=209084277223194624,
             queueTime=(datetime.now() + timedelta(minutes=60))
         ),
@@ -35,8 +35,8 @@ def fillQueue():
             queueTime=(datetime.now() + timedelta(minutes=60))
         ),
         BallChaser(
-            name="! KwLogic#1837",
-            id=293413288723611649,
+            name="sacrrii#5845",
+            id=616393103322120212,
             queueTime=(datetime.now() + timedelta(minutes=60))
         ),
     ]
