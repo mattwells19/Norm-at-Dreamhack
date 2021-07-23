@@ -1,11 +1,12 @@
 from CheckForUpdates import updateBot
 from EmbedHelper import AdminEmbed, ErrorEmbed, QueueUpdateEmbed
 from typing import List
+from Types import Team
 from bot import __version__, LB_CHANNEL
 from discord import Role, Embed, Member
 import Queue
-import SixMans
-from Leaderboard import brokenQueue as breakQueue
+from Commands.Utils import updateLeaderboardChannel
+from Leaderboard import brokenQueue as breakQueue, reportMatch
 
 
 def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
@@ -46,11 +47,28 @@ def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
         )
 
 
-def forceReport(roles: List[Role], mentions: List[Member], team: str) -> Embed:
+async def forceReport(mentions: List[Member], roles: List[Role], *arg) -> Embed:
     if (Queue.isBotAdmin(roles)):
-        if (len(mentions) == 1 and "<@!" in mentions):
-            if (team.lower() == "blue" or team.lower() == "orange"):
-                SixMans.report(mentions, LB_CHANNEL, str.lower())
+        if (len(mentions) == 1):
+            if (len(arg) == 2 and (str(arg[1]).lower() == Team.BLUE or str(arg[1]).lower() == Team.ORANGE)):
+
+                player = mentions[0]
+                msg = reportMatch(player, arg[1], 1)
+
+                if (":x:" in msg):
+                    return ErrorEmbed(
+                        title="Match Not Found",
+                        desc=msg[4:]
+                    )
+
+                if (":white_check_mark:" in msg):
+
+                    try:
+                        # if match was reported successfully, update leaderboard channel
+                        await updateLeaderboardChannel(LB_CHANNEL)
+                    except Exception as e:
+                        print("! Norm does not have access to update the leaderboard.", e)
+
                 return AdminEmbed(
                     title="Match Force Reported Successfully",
                     desc="You may now re-queue."

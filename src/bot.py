@@ -227,7 +227,7 @@ async def reportMatch(ctx, *arg):
 
 @client.command(name="forceReport", aliases=["fr", "force"], pass_context=True)
 async def forceReport(ctx, *arg):
-    await ctx.send(embed=Admin.forceReport(ctx.message.author.roles, ctx.message.mentions, *arg))
+    await ctx.send(embed=await Admin.forceReport(ctx.message.mentions, ctx.message.author.roles, *arg))
 
 
 @client.command(name="leaderboard", aliases=["lb", "standings", "rank", "rankings", "stonks"], pass_contex=True)
