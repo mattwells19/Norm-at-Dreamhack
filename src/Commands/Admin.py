@@ -1,9 +1,10 @@
 from CheckForUpdates import updateBot
 from EmbedHelper import AdminEmbed, ErrorEmbed, QueueUpdateEmbed
 from typing import List
-from bot import __version__
+from bot import __version__, LB_CHANNEL
 from discord import Role, Embed, Member
 import Queue
+import SixMans
 from Leaderboard import brokenQueue as breakQueue
 
 
@@ -42,6 +43,32 @@ def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
         return AdminEmbed(
             title="Permission Denied",
             desc="You do not have the strength to break queues. Ask an admin if you need to break a queue."
+        )
+
+
+def forceReport(roles: List[Role], mentions: List[Member], team: str) -> Embed:
+    if (Queue.isBotAdmin(roles)):
+        if (len(mentions) == 1):
+            if (team.lower() == "blue" or team.lower() == "orange"):
+                SixMans.report(mentions, LB_CHANNEL, str.lower())
+                return AdminEmbed(
+                    title="Match Force Reported Successfully",
+                    desc="You may now re-queue."
+                )
+            else:
+                return ErrorEmbed(
+                    title="You Must Report A Valid Team",
+                    desc="You did not supply a valid team to report."
+                )
+        else:
+            return ErrorEmbed(
+                title="Could Not Report The Match",
+                desc="You must mention one player who is in the match you want to report."
+            )
+    else:
+        return ErrorEmbed(
+            title="Permission Denied",
+            desc="You do not have the strength to force report matches. Ask an admin if you need to force report a match."
         )
 
 
