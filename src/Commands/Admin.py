@@ -48,7 +48,7 @@ def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
 
 def forceReport(roles: List[Role], mentions: List[Member], team: str) -> Embed:
     if (Queue.isBotAdmin(roles)):
-        if (len(mentions) == 1):
+        if (len(mentions) == 1 and "<@!" in mentions):
             if (team.lower() == "blue" or team.lower() == "orange"):
                 SixMans.report(mentions, LB_CHANNEL, str.lower())
                 return AdminEmbed(

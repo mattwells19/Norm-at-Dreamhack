@@ -225,6 +225,11 @@ async def reportMatch(ctx, *arg):
     await ctx.send(embed=await SixMans.report(ctx.message.author, LB_CHANNEL, *arg))
 
 
+@client.command(name="forceReport", aliases=["fr", "force"], pass_context=True)
+async def forceReport(ctx, *arg):
+    await ctx.send(embed=Admin.forceReport(ctx.message.author.roles, ctx.message.mentions, *arg))
+
+
 @client.command(name="leaderboard", aliases=["lb", "standings", "rank", "rankings", "stonks"], pass_contex=True)
 async def showLeaderboard(ctx, *arg):
     await ctx.send(embed=SixMans.leaderboard(ctx.message.author, ctx.message.mentions, LEADERBOARD_CH_ID, *arg))
