@@ -3,7 +3,7 @@ from EmbedHelper import AdminEmbed, ErrorEmbed, QueueUpdateEmbed
 from typing import List
 from Types import Team
 from bot import __version__
-from discord import Role, Embed, Member, channel
+from discord import Role, Embed, Member, channel as Channel
 import Queue
 from Commands.Utils import updateLeaderboardChannel
 from Leaderboard import brokenQueue as breakQueue, reportMatch
@@ -47,7 +47,7 @@ def brokenQueue(roles: List[Role], mentions: List[Member]) -> Embed:
         )
 
 
-async def forceReport(mentions: List[Member], roles: List[Role], lbChannel = channel, *arg) -> Embed:
+async def forceReport(mentions: List[Member], roles: List[Role], lbChannel: Channel, *arg) -> Embed:
     if (Queue.isBotAdmin(roles)):
         if (len(mentions) == 1):
             if (len(arg) == 2 and (str(arg[1]).lower() == Team.BLUE or str(arg[1]).lower() == Team.ORANGE)):
