@@ -53,7 +53,7 @@ async def forceReport(mentions: List[Member], roles: List[Role], *arg) -> Embed:
             if (len(arg) == 2 and (str(arg[1]).lower() == Team.BLUE or str(arg[1]).lower() == Team.ORANGE)):
 
                 player = mentions[0]
-                msg = reportMatch(player, arg[1], 1)
+                msg = reportMatch(player, arg[1], True)
                 
                 if (":x:" in msg):
                     return ErrorEmbed(
