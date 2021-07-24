@@ -2,7 +2,7 @@ from CheckForUpdates import updateBot
 from EmbedHelper import AdminEmbed, ErrorEmbed, QueueUpdateEmbed
 from typing import List
 from Types import Team
-from bot import __version__, LB_CHANNEL
+from bot import __version__
 from discord import Role, Embed, Member, channel
 import Queue
 from Commands.Utils import updateLeaderboardChannel
