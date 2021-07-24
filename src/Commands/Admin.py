@@ -54,7 +54,7 @@ async def forceReport(mentions: List[Member], roles: List[Role], *arg) -> Embed:
 
                 player = mentions[0]
                 msg = reportMatch(player, arg[1], 1)
-
+                
                 if (":x:" in msg):
                     return ErrorEmbed(
                         title="Match Not Found",

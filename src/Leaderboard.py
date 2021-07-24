@@ -69,7 +69,7 @@ def reportConfirm(player: BallChaser, match: Document, whoWon: Team) -> str:
     return ""
 
 
-def reportMatch(player: Member, whoWon: Team, adminOverride = 1) -> str:
+def reportMatch(player: Member, whoWon: Team, adminOverride = 0) -> str:
     global sorted_lb
     match = getActiveMatch(player)
 
@@ -84,7 +84,7 @@ def reportMatch(player: Member, whoWon: Team, adminOverride = 1) -> str:
     )
     msg = reportConfirm(player, match, whoWon)
     
-    if (msg == "" or adminOverride):
+    if (msg == "" or adminOverride == 1):
         for key in match:
             if (key != MatchKey.REPORTED_WINNER):
                 teamMember = match[key]
