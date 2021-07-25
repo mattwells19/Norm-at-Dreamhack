@@ -48,7 +48,7 @@ def playerQueue(player: Member, reportChannelId: int, *arg) -> PlayerQueueRespon
     elif (queueTime > 60):
         queueTime = 60
 
-    elif (Queue.isPlayerInQueue(player)):
+    if (Queue.isPlayerInQueue(player)):
         Queue.resetPlayerQueueTime(player, queueTime)
         response.embed = QueueUpdateEmbed(
             title="Already in Queue, Queue Time Reset",
