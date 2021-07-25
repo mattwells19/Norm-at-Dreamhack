@@ -7,6 +7,7 @@ __maintainer__ = "Matt Wells (Tux) / Austin Baker (h)"
 __email__ = "mattwells878@gmail.com / noise.9no@gmail.com"
 __credits__ = "Forked from https://github.com/ClamSageCaleb/UNCC-SIX-MANS to be modified for UNCC event with Dreamhack."
 
+import asyncio
 import AWSHelper as AWS
 from DataFiles import getDiscordToken, updateDiscordToken, getChannelIds
 from EmbedHelper import ErrorEmbed, AdminEmbed, HelpEmbed
@@ -19,7 +20,6 @@ from time import sleep
 from typing import List
 from Commands import EasterEggs, SixMans, Testing, Admin, Utils
 from discord.embeds import Embed
-from Leaderboard import getActiveMatch
 from Queue import getBallChaserList
 
 # Bot prefix and Discord Bot token
@@ -136,48 +136,23 @@ async def stale_queue_timer():
 @client.command(name='q', aliases=['addmepapanorm', 'Q', 'addmebitch', 'queue', 'join'], pass_context=True)
 async def q(ctx, *arg):
     players = getBallChaserList()
-    messages = SixMans.playerQueue(
+    response = SixMans.playerQueue(
         ctx.message.author,
         REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1,
         *arg,
     )
     author = ctx.message.author
-    for msg in messages:
-        if (isinstance(msg, Embed)):
-            if (getActiveMatch(author) is not None):
-                for i in players:
-                    user = await client.fetch_user(str(i.id))
-                    await user.send(embed=msg)
-                
-                await author.send(embed=msg)
+    if (response.sendPrivately):
+        async def sendPrivateMsg(playerId: str):
+            user = await client.fetch_user(playerId)
+            if (not user.bot):
+                await user.send(embed=response.embed)
 
-            await ctx.send(embed=msg)
-        else:
-            await ctx.send(msg)
+        players.append(author)
+        # perform each async task synchronously since we don't care about order of completion
+        await asyncio.wait([sendPrivateMsg(str(p.id)) for p in players])
 
-
-@client.command(name='qq', aliases=['quietq', 'QQ', 'quietqueue', 'shh', 'dontping'], pass_context=True)
-async def qq(ctx, *arg):
-    players = getBallChaserList()
-    messages = SixMans.playerQueue(
-        ctx.message.author,
-        REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1,
-        *arg,
-        quiet=True
-    )
-    author = ctx.message.author
-    for msg in messages:
-        if (isinstance(msg, Embed)):
-            if (getActiveMatch(author) is not None):
-                for i in players:
-                    user = await client.fetch_user(str(i.id))
-                    await user.send(embed=msg)
-                
-                await author.send(embed=msg)
-
-            await ctx.send(embed=msg)
-        else:
-            await ctx.send(msg)
+    await ctx.send(embed=response.embed)
 
 
 @client.command(name='leave', aliases=['yoink', 'gtfo', 'getmethefuckouttahere'], pass_context=True)
