@@ -19,7 +19,6 @@ from time import sleep
 from typing import List
 from Commands import EasterEggs, SixMans, Testing, Admin, Utils
 from discord.embeds import Embed
-from Leaderboard import getActiveMatch
 from Queue import getBallChaserList
 
 # Bot prefix and Discord Bot token
@@ -136,48 +135,21 @@ async def stale_queue_timer():
 @client.command(name='q', aliases=['addmepapanorm', 'Q', 'addmebitch', 'queue', 'join'], pass_context=True)
 async def q(ctx, *arg):
     players = getBallChaserList()
-    messages = SixMans.playerQueue(
+    response = SixMans.playerQueue(
         ctx.message.author,
         REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1,
         *arg,
     )
     author = ctx.message.author
-    for msg in messages:
-        if (isinstance(msg, Embed)):
-            if (getActiveMatch(author) is not None):
-                for i in players:
-                    user = await client.fetch_user(str(i.id))
-                    await user.send(embed=msg)
-                
-                await author.send(embed=msg)
+    if (response.sendPrivately):
+        for i in players:
+            user = await client.fetch_user(str(i.id))
+            if (not user.bot):
+                await user.send(embed=response.embed)
 
-            await ctx.send(embed=msg)
-        else:
-            await ctx.send(msg)
+        await author.send(embed=response.embed)
 
-
-@client.command(name='qq', aliases=['quietq', 'QQ', 'quietqueue', 'shh', 'dontping'], pass_context=True)
-async def qq(ctx, *arg):
-    players = getBallChaserList()
-    messages = SixMans.playerQueue(
-        ctx.message.author,
-        REPORT_CH_IDS[0] if (len(REPORT_CH_IDS) > 0) else -1,
-        *arg,
-        quiet=True
-    )
-    author = ctx.message.author
-    for msg in messages:
-        if (isinstance(msg, Embed)):
-            if (getActiveMatch(author) is not None):
-                for i in players:
-                    user = await client.fetch_user(str(i.id))
-                    await user.send(embed=msg)
-                
-                await author.send(embed=msg)
-
-            await ctx.send(embed=msg)
-        else:
-            await ctx.send(msg)
+    await ctx.send(embed=response.embed)
 
 
 @client.command(name='leave', aliases=['yoink', 'gtfo', 'getmethefuckouttahere'], pass_context=True)
