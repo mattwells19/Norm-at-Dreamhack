@@ -7,6 +7,7 @@ __maintainer__ = "Matt Wells (Tux) / Austin Baker (h)"
 __email__ = "mattwells878@gmail.com / noise.9no@gmail.com"
 __credits__ = "Forked from https://github.com/ClamSageCaleb/UNCC-SIX-MANS to be modified for UNCC event with Dreamhack."
 
+import asyncio
 import AWSHelper as AWS
 from DataFiles import getDiscordToken, updateDiscordToken, getChannelIds
 from EmbedHelper import ErrorEmbed, AdminEmbed, HelpEmbed
@@ -142,12 +143,14 @@ async def q(ctx, *arg):
     )
     author = ctx.message.author
     if (response.sendPrivately):
-        for i in players:
-            user = await client.fetch_user(str(i.id))
+        async def sendPrivateMsg(playerId: str):
+            user = await client.fetch_user(playerId)
             if (not user.bot):
                 await user.send(embed=response.embed)
 
-        await author.send(embed=response.embed)
+        players.append(author)
+        # perform each async task synchronously since we don't care about order of completion
+        await asyncio.wait([sendPrivateMsg(str(p.id)) for p in players])
 
     await ctx.send(embed=response.embed)
 
