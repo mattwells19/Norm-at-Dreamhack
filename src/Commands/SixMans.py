@@ -48,12 +48,6 @@ def playerQueue(player: Member, reportChannelId: int, *arg) -> PlayerQueueRespon
     elif (queueTime > 60):
         queueTime = 60
 
-    if (Queue.queueAlreadyPopped()):
-        response.embed = ErrorEmbed(
-            title="Current Lobby Not Set",
-            desc="Please wait until current lobby has been set.",
-        )
-
     elif (Queue.isPlayerInQueue(player)):
         Queue.resetPlayerQueueTime(player, queueTime)
         response.embed = QueueUpdateEmbed(
@@ -82,12 +76,6 @@ def playerQueue(player: Member, reportChannelId: int, *arg) -> PlayerQueueRespon
             title="Queue Started",
             desc="{0} wants to queue!\n\nQueued for {1} minutes.\n\n"
             "Type **!q** to join".format(player.mention, queueTime),
-        )
-
-    elif (queue_length >= 6):
-        response.embed = ErrorEmbed(
-            title="Queue Already Full",
-            desc="Queue is already full, please wait until the current queue is set and try again.",
         )
 
     elif (queue_length == 5):
