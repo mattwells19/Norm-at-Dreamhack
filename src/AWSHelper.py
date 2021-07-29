@@ -1,7 +1,7 @@
-from DataFiles import configPath
 from Leaderboard import resetFromRemote
 import boto3
 import json
+from os import getenv
 
 aws_id = ""
 aws_secret = ""
@@ -17,11 +17,9 @@ def init() -> None:
         aws_secret == "" or
         aws_object == ""
     ):
-        with open(configPath, "r") as config:
-            configData = json.load(config)
-            aws_id = configData["aws_access_key_id"]
-            aws_secret = configData["aws_secret_access_key"]
-            aws_object = configData["aws_object_name"]
+        aws_id = getenv("aws_access_key_id", "")
+        aws_secret = getenv("aws_secret_access_key", "")
+        aws_object = getenv("aws_object_name", "")
 
     if (
         aws_id != "" and
