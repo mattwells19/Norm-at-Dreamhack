@@ -14,19 +14,24 @@ from EmbedHelper import \
 from Commands.Utils import generateLobbyDetails, updateLeaderboardChannel, orangeTeamPick, blueTeamPick
 
 
-def playerQueue(player: Member, reportChannelId: int, *arg, quiet: bool = False) -> List[str or Embed]:
+class PlayerQueueResponse:
+    embed = None
+    sendPrivately = False
+
+
+def playerQueue(player: Member, reportChannelId: int, *arg) -> PlayerQueueResponse:
     """
         Adds the author to the Queue for the specified amount of time.
 
         Parameters:
             player: discord.Member - The author of the message. The person being removed from the queue.
             *arg: tuple - The args passed into the client function.
-            quiet: bool (optional, default is False) - Specifies whether to include @here ping in channel.
 
         Returns:
             dicord.Embed - The embedded message to respond with.
     """
     queue_length = Queue.getQueueLength()
+    response = PlayerQueueResponse()
 
     try:
         queueTime = int(arg[0]) if len(arg) > 0 else 60
@@ -43,74 +48,55 @@ def playerQueue(player: Member, reportChannelId: int, *arg, quiet: bool = False)
     elif (queueTime > 60):
         queueTime = 60
 
-    if (Queue.queueAlreadyPopped()):
-        return [ErrorEmbed(
-            title="Current Lobby Not Set",
-            desc="Please wait until current lobby has been set.",
-        )]
-
     if (Queue.isPlayerInQueue(player)):
         Queue.resetPlayerQueueTime(player, queueTime)
-        return [QueueUpdateEmbed(
+        response.embed = QueueUpdateEmbed(
             title="Already in Queue, Queue Time Reset",
             desc="You're already in the queue, but your queue time has been reset to {0} minutes.".format(queueTime),
-        )]
+        )
 
-    if (Leaderboard.getActiveMatch(player) is not None):
+    elif (Leaderboard.getActiveMatch(player) is not None):
         if (reportChannelId != -1):
-            return [ErrorEmbed(
+            response.embed = ErrorEmbed(
                 title="Match Still Active",
                 desc="Your previous match has not been reported yet."
                 " Report your match in <#{0}> and try again.".format(reportChannelId),
-            )]
+            )
         else:
-            return [ErrorEmbed(
+            response.embed = ErrorEmbed(
                 title="Match Still Active",
                 desc="Your previous match has not been reported yet."
                 " Report your match and try again.",
-            )]
+            )
 
-    if(queue_length == 0):
+    elif (queue_length == 0):
         Queue.addToQueue(player, queueTime)
 
-        if (quiet):
-            return [QueueUpdateEmbed(
-                title="Queue has Started :shushing_face:",
-                desc="{0} wants to queue!\n\nQueued for {1} minutes.\n\n"
-                "Type **!q** to join".format(player.mention, queueTime),
-            )]
+        response.embed = QueueUpdateEmbed(
+            title="Queue Started",
+            desc="{0} wants to queue!\n\nQueued for {1} minutes.\n\n"
+            "Type **!q** to join".format(player.mention, queueTime),
+        )
 
-        return ["@here Queue has started!",
-                QueueUpdateEmbed(
-                    title="Queue Started",
-                    desc="{0} wants to queue!\n\nQueued for {1} minutes.\n\n"
-                    "Type **!q** to join".format(player.mention, queueTime),
-                )]
-
-    if (queue_length >= 6):
-        return [ErrorEmbed(
-            title="Queue Already Full",
-            desc="Queue is already full, please wait until the current queue is set and try again.",
-        )]
-
-    if (queue_length == 5):
+    elif (queue_length == 5):
         Queue.addToQueue(player, queueTime)
-
-        mentionedPlayerList = Queue.getQueueList(mentionPlayers=True, separator=", ")
         randomTeamsEmbed = random()
+        response.embed = randomTeamsEmbed
+        response.sendPrivately = True
 
-        return [randomTeamsEmbed, "Queue has popped! Get ready!\n" + mentionedPlayerList]
+    else:
+        Queue.addToQueue(player, queueTime)
+        playerList = Queue.getQueueList()
 
-    Queue.addToQueue(player, queueTime)
-    playerList = Queue.getQueueList()
+        response.embed = QueueUpdateEmbed(
+            title="Player Added to Queue",
+            desc=player.mention + " has been added to the queue for " + str(queueTime) + " minutes."
+        ).add_field(
+            name="Current Queue " + str(queue_length + 1) + "/6",
+            value=playerList
+        )
 
-    return [QueueUpdateEmbed(
-        title="Player Added to Queue",
-        desc=player.mention + " has been added to the queue for " + str(queueTime) + " minutes."
-    ).add_field(
-        name="Current Queue " + str(queue_length + 1) + "/6",
-        value=playerList
-    )]
+    return response
 
 
 def leave(player: Member) -> Embed:
