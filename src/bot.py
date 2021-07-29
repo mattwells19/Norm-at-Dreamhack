@@ -18,6 +18,8 @@ from time import sleep
 from typing import List
 from Commands import EasterEggs, SixMans, Testing, Admin, Utils
 from discord.embeds import Embed
+from Leaderboard import getActiveMatch
+from Queue import getBallChaserList
 
 # Bot prefix and Discord Bot token
 BOT_PREFIX = ("!")
@@ -132,9 +134,19 @@ async def stale_queue_timer():
 
 @client.command(name='q', aliases=['addmepapanorm', 'Q', 'addmebitch', 'queue', 'join'], pass_context=True)
 async def q(ctx, *arg):
+    players = getBallChaserList()
     messages = SixMans.playerQueue(ctx.message.author, REPORT_CH_ID, *arg)
+    author = ctx.message.author
+
     for msg in messages:
         if (isinstance(msg, Embed)):
+            if (getActiveMatch(author) is not None):
+                for i in players:
+                    user = await client.fetch_user(str(i.id))
+                    await user.send(embed=msg)
+
+                await author.send(embed=msg)
+
             await ctx.send(embed=msg)
         else:
             await ctx.send(msg)
@@ -142,14 +154,23 @@ async def q(ctx, *arg):
 
 @client.command(name='qq', aliases=['quietq', 'QQ', 'quietqueue', 'shh', 'dontping'], pass_context=True)
 async def qq(ctx, *arg):
+    players = getBallChaserList()
     messages = SixMans.playerQueue(
         ctx.message.author,
         REPORT_CH_ID,
         *arg,
         quiet=True
     )
+    author = ctx.message.author
     for msg in messages:
         if (isinstance(msg, Embed)):
+            if (getActiveMatch(author) is not None):
+                for i in players:
+                    user = await client.fetch_user(str(i.id))
+                    await user.send(embed=msg)
+
+                await author.send(embed=msg)
+
             await ctx.send(embed=msg)
         else:
             await ctx.send(msg)
@@ -200,6 +221,11 @@ async def reportMatch(ctx, *arg):
     await ctx.send(embed=await SixMans.report(ctx.message.author, LB_CHANNEL, *arg))
 
 
+@client.command(name="forceReport", aliases=["fr", "force"], pass_context=True)
+async def forceReport(ctx, *arg):
+    await ctx.send(embed=await Admin.forceReport(ctx.message.mentions, ctx.message.author.roles, LB_CHANNEL, *arg))
+
+
 @client.command(name="leaderboard", aliases=["lb", "standings", "rank", "rankings", "stonks"], pass_contex=True)
 async def showLeaderboard(ctx, *arg):
     await ctx.send(embed=SixMans.leaderboard(ctx.message.author, ctx.message.mentions, LEADERBOARD_CH_ID, *arg))
@@ -244,9 +270,13 @@ async def restart(ctx):
     await ctx.send(embed=Admin.restart())
 
 
-@client.command(name='update', pass_context=True)
+@client.command(name="update", pass_context=True)
 async def update(ctx):
-    await ctx.send(embed=Admin.update())
+    await ctx.send(embed=AdminEmbed(
+        title="Checking For Updates",
+        desc="Please hang tight."
+    ))
+    await ctx.send(embed=Admin.update(ctx.message.author.roles))
 
 
 """
