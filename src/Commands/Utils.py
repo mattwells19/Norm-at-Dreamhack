@@ -4,8 +4,6 @@ import Queue
 import Leaderboard
 from Types import BallChaser, LobbyDetails
 from typing import List
-from os import path, getcwd
-import json
 import random
 
 
@@ -13,22 +11,11 @@ def generateLobbyDetails() -> LobbyDetails:
     username = "uncc-"
     password = "uncc-"
 
-    randomDataDir = path.join(getcwd(), "src", "random_words")
+    for _ in range(5):
+        username += str(random.randint(0, 9))
 
-    with open(path.join(randomDataDir, "colors.json"), "r") as colors:
-        allColors: List[str] = json.load(colors)
-        username += random.choice(allColors) + "-"
-        password += random.choice(allColors) + "-"
-
-    with open(path.join(randomDataDir, "adjectives.json"), "r") as adjectives:
-        allAdjectives: List[str] = json.load(adjectives)
-        username += random.choice(allAdjectives) + "-"
-        password += random.choice(allAdjectives) + "-"
-
-    with open(path.join(randomDataDir, "animals.json"), "r") as animals:
-        allAnimals: List[str] = json.load(animals)
-        username += random.choice(allAnimals)
-        password += random.choice(allAnimals)
+    for _ in range(5):
+        password += str(random.randint(0, 9))
 
     return LobbyDetails(username, password)
 
