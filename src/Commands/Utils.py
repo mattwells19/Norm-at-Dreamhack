@@ -8,8 +8,8 @@ import random
 
 
 def generateLobbyDetails() -> LobbyDetails:
-    username = "uncc-"
-    password = "uncc-"
+    username = "uncc"
+    password = "uncc"
 
     for _ in range(5):
         username += str(random.randint(0, 9))
